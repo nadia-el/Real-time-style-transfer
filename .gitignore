@@ -9,3 +9,6 @@ logs/
 checkpoints_original/
 checkpoints_v2/
 github_img/
+.DS_STORE
+*.zip
+data/
