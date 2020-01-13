@@ -8,16 +8,20 @@ import os
 import sys
 import scipy.misc
 import numpy as np
-
+import imageio
 
 def imread(path, is_gray_scale=False, img_size=None):
-    if is_gray_scale:
-        img = scipy.misc.imread(path, flatten=True).astype(np.float32)
-    else:
-        img = scipy.misc.imread(path, mode='RGB').astype(np.float32)
+    # if is_gray_scale:
+    #     img = scipy.misc.imread(path, flatten=True).astype(np.float32)
+    # else:
+    #     img = scipy.misc.imread(path, mode='RGB').astype(np.float32)
+    if not is_gray_scale:
+        img = imageio.imread(path).astype(np.float32)
 
         if not (img.ndim == 3 and img.shape[2] == 3):
             img = np.dstack((img, img, img))
+    else:
+        raise ValueError  # tmp
 
     if img_size is not None:
         img = scipy.misc.imresize(img, img_size)
@@ -27,7 +31,8 @@ def imread(path, is_gray_scale=False, img_size=None):
 
 def imsave(path, img):
     img = np.clip(img, 0, 255).astype(np.uint8)
-    scipy.misc.imsave(path, img)
+    # scipy.misc.imsave(path, img)
+    imageio.imwrite(path, img)
 
 
 def all_files_under(path, extension=None, append_path=True, sort=True):

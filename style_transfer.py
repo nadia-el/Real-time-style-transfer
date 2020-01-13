@@ -38,8 +38,8 @@ class StyleTranser(object):
 
     def _build_net(self):
         # ph: tensorflow placeholder
-        self.style_img_ph = tf.placeholder(tf.float32, shape=self.style_shape, name='style_img')
-        self.content_img_ph = tf.placeholder(tf.float32, shape=self.content_shape, name='content_img')
+        self.style_img_ph = tf.compat.v1.placeholder(tf.float32, shape=self.style_shape, name='style_img')
+        self.content_img_ph = tf.compat.v1.placeholder(tf.float32, shape=self.content_shape, name='content_img')
 
         self.transfer = Transfer()
         self.vgg = VGG19(self.flags.vgg_path)
@@ -69,15 +69,15 @@ class StyleTranser(object):
         self.tv_loss_func(self.preds)
 
         self.total_loss = self.content_loss + self.style_loss + self.tv_loss
-        self.optim = tf.train.AdamOptimizer(learning_rate=self.flags.learning_rate).minimize(self.total_loss)
+        self.optim = tf.compat.v1.train.AdamOptimizer(learning_rate=self.flags.learning_rate).minimize(self.total_loss)
 
     def _tensorboard(self):
-        tf.summary.scalar('loss/content_loss', self.content_loss)
-        tf.summary.scalar('loss/style_loss', self.style_loss)
-        tf.summary.scalar('loss/tv_loss', self.tv_loss)
-        tf.summary.scalar('loss/total_loss', self.total_loss)
+        tf.compat.v1.summary.scalar('loss/content_loss', self.content_loss)
+        tf.compat.v1.summary.scalar('loss/style_loss', self.style_loss)
+        tf.compat.v1.summary.scalar('loss/tv_loss', self.tv_loss)
+        tf.compat.v1.summary.scalar('loss/total_loss', self.total_loss)
 
-        self.summary_op = tf.summary.merge_all()
+        self.summary_op = tf.compat.v1.summary.merge_all()
 
     def content_loss_func(self, preds_dict, content_target_feature):
         # calucate content size and check the feature dimension between content and predicted image
@@ -94,8 +94,8 @@ class StyleTranser(object):
             layer = preds_dict[style_layer]
             _, height, width, num_filters = map(lambda i: i.value, layer.get_shape())
             feature_size = height * width * num_filters
-            feats = tf.reshape(layer, (tf.shape(layer)[0], height * width, num_filters))
-            feats_trans = tf.transpose(feats, perm=[0, 2, 1])
+            feats = tf.reshape(layer, (tf.shape(input=layer)[0], height * width, num_filters))
+            feats_trans = tf.transpose(a=feats, perm=[0, 2, 1])
             grams = tf.matmul(feats_trans, feats) / feature_size
             style_gram = self.style_target_gram[style_layer]
             style_losses.append(2 * tf.nn.l2_loss(grams - style_gram) / style_gram.size)
@@ -138,7 +138,7 @@ class StyleTranser(object):
 
 class Transfer(object):
     def __call__(self, img, name='transfer', is_reuse=False):
-        with tf.variable_scope(name, reuse=is_reuse):
+        with tf.compat.v1.variable_scope(name, reuse=is_reuse):
             # [H, W, C] -> [H, W, 32]
             conv1 = self._conv_layer(img, num_filters=32, filter_size=9, strides=1, name='conv1')
             # [H, W, 32] -> [H/2, W/2, 64]
@@ -159,7 +159,7 @@ class Transfer(object):
 
     @staticmethod
     def _conv_layer(input_, num_filters=32, filter_size=3, strides=1, relu=True, name=None):
-        with tf.variable_scope(name):
+        with tf.compat.v1.variable_scope(name):
             input_ = tf_utils.padding2d(input_, p_h=int(filter_size/2), p_w=int(filter_size/2), pad_type='REFLECT')
             input_ = tf_utils.conv2d(input_, output_dim=num_filters, k_h=filter_size, k_w=filter_size,
                                      d_h=strides, d_w=strides, padding='VALID')
@@ -172,7 +172,7 @@ class Transfer(object):
 
     @staticmethod
     def n_res_blocks(x, _ops=None, norm_='instance', is_train=True, num_blocks=6, is_print=False, name=None):
-        with tf.variable_scope(name):
+        with tf.compat.v1.variable_scope(name):
             output = None
             for idx in range(1, num_blocks + 1):
                 output = tf_utils.res_block(x, x.get_shape()[3], _ops=_ops, norm_=norm_, is_train=is_train,
@@ -186,7 +186,7 @@ class Transfer(object):
 
     @staticmethod
     def _conv_tranpose_layer(input_, num_filters=32, filter_size=3, strides=2, name=None):
-        with tf.variable_scope(name):
+        with tf.compat.v1.variable_scope(name):
             input_ = tf_utils.deconv2d(input_, num_filters, k_h=filter_size, k_w=filter_size, d_h=strides, d_w=strides)
             input_ = tf_utils.instance_norm(input_)
 
@@ -208,7 +208,7 @@ class VGG19(object):
         )
 
     def __call__(self, img, name='vgg', is_reuse=False):
-        with tf.variable_scope(name, reuse=is_reuse):
+        with tf.compat.v1.variable_scope(name, reuse=is_reuse):
             img_pre = self.preprocess(img)
 
             net_dic = {}
@@ -235,12 +235,12 @@ class VGG19(object):
 
     @staticmethod
     def _conv_layer(input_, weights, bias):
-        conv = tf.nn.conv2d(input_, tf.constant(weights), strides=(1, 1, 1, 1), padding='SAME')
+        conv = tf.nn.conv2d(input=input_, filters=tf.constant(weights), strides=(1, 1, 1, 1), padding='SAME')
         return tf.nn.bias_add(conv, bias)
 
     @staticmethod
     def _pool_layer(input_):
-        return tf.nn.max_pool(input_, ksize=(1, 2, 2, 1), strides=(1, 2, 2, 1), padding='SAME')
+        return tf.nn.max_pool2d(input=input_, ksize=(1, 2, 2, 1), strides=(1, 2, 2, 1), padding='SAME')
 
     def preprocess(self, img):
         return img - self.mean_pixel

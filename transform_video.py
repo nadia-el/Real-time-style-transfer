@@ -30,16 +30,16 @@ def feed_forward_video(path_in, path_out, checkpoint_dir):
                                                     threads=None, ffmpeg_params=None)
 
     g = tf.Graph()
-    soft_config = tf.ConfigProto(allow_soft_placement=True)
+    soft_config = tf.compat.v1.ConfigProto(allow_soft_placement=True)
     soft_config.gpu_options.allow_growth = True
 
-    with g.as_default(), tf.Session(config=soft_config) as sess:
+    with g.as_default(), tf.compat.v1.Session(config=soft_config) as sess:
         batch_shape = (None, video_cap.size[1], video_cap.size[0], 3)
-        img_placeholder = tf.placeholder(tf.float32, shape=batch_shape, name='img_placeholder')
+        img_placeholder = tf.compat.v1.placeholder(tf.float32, shape=batch_shape, name='img_placeholder')
 
         model = Transfer()
         pred = model(img_placeholder)
-        saver = tf.train.Saver()
+        saver = tf.compat.v1.train.Saver()
 
         if os.path.isdir(checkpoint_dir):
             ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
@@ -73,4 +73,4 @@ def main(_):
 
 
 if __name__ == '__main__':
-    tf.app.run()
+    tf.compat.v1.app.run()

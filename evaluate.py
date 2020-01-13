@@ -12,14 +12,15 @@ from collections import defaultdict
 
 from style_transfer import Transfer
 import utils as utils
+import absl
 
-FLAGS = tf.flags.FLAGS
-tf.flags.DEFINE_string('gpu_index', '0', 'gpu index, default: 0')
-tf.flags.DEFINE_string('checkpoint_dir', 'checkpoints/la_muse',
+FLAGS = absl.flags.FLAGS  # tf.flags.FLAGS
+absl.flags.DEFINE_string('gpu_index', '0', 'gpu index, default: 0')
+absl.flags.DEFINE_string('checkpoint_dir', 'checkpoints/la_muse',
                        'dir to read checkpoint in, default: ./checkpoints/la_muse')
 
-tf.flags.DEFINE_string('in_path', './examples/test', 'test image path, default: ./examples/test')
-tf.flags.DEFINE_string('out_path', './examples/results',
+absl.flags.DEFINE_string('in_path', './examples/test', 'test image path, default: ./examples/test')
+absl.flags.DEFINE_string('out_path', './examples/results',
                        'destination dir of transformed files, default: ./examples/restuls')
 
 
@@ -27,16 +28,16 @@ def feed_transform(data_in, paths_out, checkpoint_dir):
     img_shape = utils.imread(data_in[0]).shape
 
     g = tf.Graph()
-    soft_config = tf.ConfigProto(allow_soft_placement=True)
+    soft_config = tf.compat.v1.ConfigProto(allow_soft_placement=True)
     soft_config.gpu_options.allow_growth = True
 
-    with g.as_default(), tf.Session(config=soft_config) as sess:
-        img_placeholder = tf.placeholder(tf.float32, shape=[None, *img_shape], name='img_placeholder')
+    with g.as_default(), tf.compat.v1.Session(config=soft_config) as sess:
+        img_placeholder = tf.compat.v1.placeholder(tf.float32, shape=[None, *img_shape], name='img_placeholder')
 
         model = Transfer()
         pred = model(img_placeholder)
 
-        saver = tf.train.Saver()
+        saver = tf.compat.v1.train.Saver()
         if os.path.isdir(checkpoint_dir):
             ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
             if ckpt and ckpt.model_checkpoint_path:
@@ -93,4 +94,4 @@ def main(_):
 
 
 if __name__ == '__main__':
-    tf.app.run()
+    tf.compat.v1.app.run()

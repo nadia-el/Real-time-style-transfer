@@ -17,9 +17,9 @@ from style_transfer import StyleTranser, Transfer
 
 class Solver(object):
     def __init__(self, flags):
-        run_config = tf.ConfigProto()
+        run_config = tf.compat.v1.ConfigProto()
         run_config.gpu_options.allow_growth = True
-        self.sess = tf.Session(config=run_config)
+        self.sess = tf.compat.v1.Session(config=run_config)
 
         self.flags = flags
         self.style_img_name = flags.style_img.split('/')[-1][:-4]
@@ -36,9 +36,9 @@ class Solver(object):
 
         self.model = StyleTranser(self.sess, self.flags, self.num_iters)
 
-        self.train_writer = tf.summary.FileWriter('logs/{}'.format(self.style_img_name), graph_def=self.sess.graph_def)
-        self.saver = tf.train.Saver()
-        self.sess.run(tf.global_variables_initializer())
+        self.train_writer = tf.compat.v1.summary.FileWriter('logs/{}'.format(self.style_img_name), graph_def=self.sess.graph_def)
+        self.saver = tf.compat.v1.train.Saver()
+        self.sess.run(tf.compat.v1.global_variables_initializer())
         tf_utils.show_all_variables()
 
     def train(self):
@@ -96,16 +96,16 @@ class Solver(object):
         img_shape = utils.imread(data_in[0]).shape
 
         g = tf.Graph()
-        soft_config = tf.ConfigProto(allow_soft_placement=True)
+        soft_config = tf.compat.v1.ConfigProto(allow_soft_placement=True)
         soft_config.gpu_options.allow_growth = True
 
-        with g.as_default(), tf.Session(config=soft_config) as sess:
-            img_placeholder = tf.placeholder(tf.float32, shape=[None, *img_shape], name='img_placeholder')
+        with g.as_default(), tf.compat.v1.Session(config=soft_config) as sess:
+            img_placeholder = tf.compat.v1.placeholder(tf.float32, shape=[None, *img_shape], name='img_placeholder')
 
             model = Transfer()
             pred = model(img_placeholder)
 
-            saver = tf.train.Saver()
+            saver = tf.compat.v1.train.Saver()
             if os.path.isdir(checkpoint_dir):
                 ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
                 if ckpt and ckpt.model_checkpoint_path:
