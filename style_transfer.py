@@ -113,7 +113,7 @@ class StyleTranser(object):
 
     @staticmethod
     def _tensor_size(tensor):
-        return functools.reduce(mul, (d.value for d in tensor.get_shape()[1:]), 1)
+        return functools.reduce(mul, (d for d in tensor.get_shape()[1:]), 1)
 
     def train_step(self, imgs):
         ops = [self.optim, self.content_loss, self.style_loss, self.tv_loss, self.total_loss, self.summary_op]
