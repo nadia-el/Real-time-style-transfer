@@ -92,7 +92,7 @@ class StyleTranser(object):
         style_losses = []
         for style_layer in self.style_layers:
             layer = preds_dict[style_layer]
-            _, height, width, num_filters = map(lambda i: i.value, layer.get_shape())
+            _, height, width, num_filters = map(lambda i: i, layer.get_shape())
             feature_size = height * width * num_filters
             feats = tf.reshape(layer, (tf.shape(input=layer)[0], height * width, num_filters))
             feats_trans = tf.transpose(a=feats, perm=[0, 2, 1])
