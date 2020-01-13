@@ -13,12 +13,14 @@ from moviepy.video.io.VideoFileClip import VideoFileClip
 import utils as utils
 from style_transfer import Transfer
 
-FLAGS = tf.flags.FLAGS
-tf.flags.DEFINE_string('gpu_index', '0', 'gpu index, default: 0')
-tf.flags.DEFINE_string('checkpoint_dir', 'checkpoints/la_muse',
+import absl
+
+FLAGS = absl.flags.FLAGS
+absl.flags.DEFINE_string('gpu_index', '0', 'gpu index, default: 0')
+absl.flags.DEFINE_string('checkpoint_dir', 'checkpoints/la_muse',
                        'dir to read checkpoint in, default: ./checkpoints/la_muse')
-tf.flags.DEFINE_string('in_path', None, 'input video path')
-tf.flags.DEFINE_string('out_path', None, 'path to save processeced video to')
+absl.flags.DEFINE_string('in_path', None, 'input video path')
+absl.flags.DEFINE_string('out_path', None, 'path to save processeced video to')
 
 
 def feed_forward_video(path_in, path_out, checkpoint_dir):

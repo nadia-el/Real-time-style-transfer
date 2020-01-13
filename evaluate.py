@@ -14,7 +14,7 @@ from style_transfer import Transfer
 import utils as utils
 import absl
 
-FLAGS = absl.flags.FLAGS  # tf.flags.FLAGS
+FLAGS = absl.flags.FLAGS
 absl.flags.DEFINE_string('gpu_index', '0', 'gpu index, default: 0')
 absl.flags.DEFINE_string('checkpoint_dir', 'checkpoints/la_muse',
                        'dir to read checkpoint in, default: ./checkpoints/la_muse')

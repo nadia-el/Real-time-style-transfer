@@ -9,31 +9,33 @@ import tensorflow as tf
 
 import utils as utils
 from solver import Solver
+import absl
 
-FLAGS = tf.flags.FLAGS
-tf.flags.DEFINE_string('gpu_index', '0', 'gpu index, default: 0')
-tf.flags.DEFINE_string('checkpoint_dir', 'checkpoints', 'dir to save checkpoint in, default: ./checkpoints')
 
-tf.flags.DEFINE_string('style_img', 'examples/style/la_muse.jpg',
+FLAGS = absl.flags.FLAGS
+absl.flags.DEFINE_string('gpu_index', '0', 'gpu index, default: 0')
+absl.flags.DEFINE_string('checkpoint_dir', 'checkpoints', 'dir to save checkpoint in, default: ./checkpoints')
+
+absl.flags.DEFINE_string('style_img', 'examples/style/la_muse.jpg',
                        'style image path, default: ./examples/style/la_muse.jpg')
-tf.flags.DEFINE_string('train_path', '../Data/coco/img/train2014',
+absl.flags.DEFINE_string('train_path', '../Data/coco/img/train2014',
                        'path to training images folder, default: ../Data/coco/img/train2014')
-tf.flags.DEFINE_string('test_path', 'examples/content',
+absl.flags.DEFINE_string('test_path', 'examples/content',
                        'test image path, default: ./examples/content')
-tf.flags.DEFINE_string('test_dir', './examples/temp', 'test image save dir, default: ./examples/temp')
+absl.flags.DEFINE_string('test_dir', './examples/temp', 'test image save dir, default: ./examples/temp')
 
-tf.flags.DEFINE_integer('epochs', 2, 'number of epochs for training data, default: 2')
-tf.flags.DEFINE_integer('batch_size', 4, 'batch size for single feed forward, default: 4')
+absl.flags.DEFINE_integer('epochs', 2, 'number of epochs for training data, default: 2')
+absl.flags.DEFINE_integer('batch_size', 4, 'batch size for single feed forward, default: 4')
 
-tf.flags.DEFINE_string('vgg_path', '../Models_zoo/imagenet-vgg-verydeep-19.mat',
+absl.flags.DEFINE_string('vgg_path', '../Models_zoo/imagenet-vgg-verydeep-19.mat',
                        'path to VGG19 network, default: ../Models_zoo/imagenet-vgg-verydeep-19.mat')
-tf.flags.DEFINE_float('content_weight', 7.5, 'content weight, default: 7.5')
-tf.flags.DEFINE_float('style_weight', 100., 'style weight, default: 100.')
-tf.flags.DEFINE_float('tv_weight', 200., 'total variation regularization weight, default: 200.')
-tf.flags.DEFINE_float('learning_rate', 0.001, 'learning rate, default: 1e-3')
+absl.flags.DEFINE_float('content_weight', 7.5, 'content weight, default: 7.5')
+absl.flags.DEFINE_float('style_weight', 100., 'style weight, default: 100.')
+absl.flags.DEFINE_float('tv_weight', 200., 'total variation regularization weight, default: 200.')
+absl.flags.DEFINE_float('learning_rate', 0.001, 'learning rate, default: 1e-3')
 
-tf.flags.DEFINE_integer('print_freq', 100, 'print loss frequency, defalut: 100')
-tf.flags.DEFINE_integer('sample_freq', 2000, 'sample frequency, default: 2000')
+absl.flags.DEFINE_integer('print_freq', 100, 'print loss frequency, defalut: 100')
+absl.flags.DEFINE_integer('sample_freq', 2000, 'sample frequency, default: 2000')
 
 
 def check_opts(flags):
