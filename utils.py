@@ -24,8 +24,7 @@ def imread(path, is_gray_scale=False, img_size=None):
         raise ValueError  # tmp
 
     if img_size is not None:
-        img = scipy.misc.imresize(img, img_size)
-
+        img = np.resize(img, img_size)
     return img
 
 
