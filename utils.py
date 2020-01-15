@@ -9,6 +9,8 @@ import sys
 import scipy.misc
 import numpy as np
 import imageio
+import cv2
+
 
 def imread(path, is_gray_scale=False, img_size=None):
     # if is_gray_scale:
@@ -24,7 +26,7 @@ def imread(path, is_gray_scale=False, img_size=None):
         raise ValueError  # tmp
 
     if img_size is not None:
-        img = np.resize(img, img_size)
+        img = cv2.resize(img, dsize=img_size[:2])
     return img
 
 
